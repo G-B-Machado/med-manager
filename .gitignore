@@ -1,0 +1,6 @@
+# Ignorar o banco de dados e arquivos temporários
+database.db
+__pycache__/
+*.pyc
+*.log
+.env
