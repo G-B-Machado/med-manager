@@ -38,3 +38,14 @@ CREATE TABLE schedules (
   dose         REAL    NOT NULL,
   FOREIGN KEY (user_med_id) REFERENCES user_meds(user_med_id)
 );
+
+CREATE TABLE IF NOT EXISTS medication_usage_log (
+    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    med_id INTEGER NOT NULL,
+    data_uso DATETIME DEFAULT CURRENT_TIMESTAMP,
+    quantidade_usada REAL NOT NULL,
+    unidade TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (med_id) REFERENCES medications(med_id)
+);

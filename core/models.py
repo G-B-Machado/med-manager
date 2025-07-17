@@ -214,7 +214,6 @@ def simular_uso_diario(user_id, med_id, dose_por_vez, vezes_por_dia, dias):
             return
 
         quantidade_atual, unidade = resultado
-
         total_dose = dose_por_vez * vezes_por_dia * dias
 
         if quantidade_atual < total_dose:
@@ -225,14 +224,22 @@ def simular_uso_diario(user_id, med_id, dose_por_vez, vezes_por_dia, dias):
 
         # Atualiza o estoque
         cursor.execute("""
-            UPDATE user_meds
+            UPDATE user_meds    
             SET quantidade_atual = ?
             WHERE user_id = ? AND med_id = ?
         """, (nova_quantidade, user_id, med_id))
 
+        # Registra no log de uso
+        for dia in range(dias):
+            for dose in range(vezes_por_dia):
+                cursor.execute("""
+                    INSERT INTO medication_usage_log (user_id, med_id, quantidade_usada, unidade)
+                    VALUES (?, ?, ?, ?)
+                """, (user_id, med_id, dose_por_vez, unidade))
+
         conn.commit()
 
-        print(f"✅ Simulação concluída: {dias} dia(s) × {vezes_por_dia} dose(s)/dia × {dose_por_vez} {unidade}/dose")
+        print(f"✅ Simulação concluída e registrada: {dias} dia(s) × {vezes_por_dia} dose(s)/dia × {dose_por_vez} {unidade}/dose")
         print(f"📉 Estoque anterior: {quantidade_atual} {unidade}")
         print(f"📦 Novo estoque: {nova_quantidade} {unidade}")
 
@@ -240,3 +247,4 @@ def simular_uso_diario(user_id, med_id, dose_por_vez, vezes_por_dia, dias):
         print(f"❌ Erro durante simulação: {e}")
     finally:
         conn.close()
+
