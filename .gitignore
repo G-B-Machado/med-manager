@@ -1,6 +1,7 @@
-# Ignorar o banco de dados e arquivos temporários
+# Ignorar banco de dados local
 database.db
+
+# Ignorar cache do Python
 __pycache__/
 *.pyc
 *.log
-.env
