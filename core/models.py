@@ -44,3 +44,21 @@ def cadastrar_medicamento(nome, dosagem, forma ):
         print(f"❌ Erro ao cadastrar medicamento: {e}")
     finally:
         conn.close()
+
+def associar_usuario_medicamento(user_id, med_id, quantidade_atual, unidade, data_inicio):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO user_meds (user_id, med_id, quantidade_atual, unidade, data_inicio)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, med_id, quantidade_atual, unidade, data_inicio))
+
+        conn.commit()
+        print(f"✅ Usuário {user_id} agora está associado ao medicamento {med_id}.")
+    except Exception as e:
+        print(f"❌ Erro ao associar usuário e medicamento: {e}")
+    finally:
+        conn.close()
+
