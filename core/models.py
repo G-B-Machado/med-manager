@@ -128,3 +128,29 @@ def listar_medicamentos_por_usuario(user_id):
         print(f"❌ Erro ao buscar medicamentos do usuário: {e}")
     finally:
         conn.close()
+
+def verificar_estoque_baixo(user_id, limite=5):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT m.nome_generico, m.dosagem, m.forma,
+                   um.quantidade_atual, um.unidade
+            FROM user_meds um
+            JOIN medications m ON um.med_id = m.med_id
+            WHERE um.user_id = ? AND um.quantidade_atual <= ?
+        """, (user_id, limite))
+
+        medicamentos_baixos = cursor.fetchall()
+
+        if medicamentos_baixos:
+            print(f"🔴 Medicamentos com estoque baixo (≤ {limite}) para o Usuário ID {user_id}:")
+            for nome, dosagem, forma, quantidade, unidade in medicamentos_baixos:
+                print(f"⚠️ {nome} ({dosagem}, {forma}) - {quantidade} {unidade} restantes")
+        else:
+            print("✅ Nenhum medicamento com estoque baixo.")
+    except Exception as e:
+        print(f"❌ Erro ao verificar estoque baixo: {e}")
+    finally:
+        conn.close()
