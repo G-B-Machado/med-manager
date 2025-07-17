@@ -66,30 +66,37 @@ def listar_medicamentos():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM medications")
-    medicamentos = cursor.fetchall()
+    try:
+        cursor.execute("SELECT med_id, nome, dosagem, forma FROM medications")
+        medicamentos = cursor.fetchall()
 
-    if medicamentos:
-        print("📋 Lista de Medicamentos:")
-        for med in medicamentos:
-            print(f"ID: {med[0]}, Nome: {med[1]}, Dosagem: {med[2]}, Forma: {med[3]}")
-    else:
-        print("❌ Nenhum medicamento cadastrado.")
+        if medicamentos:
+            print("📋 Lista de Medicamentos:")
+            for med_id, nome, dosagem, forma in medicamentos:
+                print(f"🧪 ID: {med_id}, Nome: {nome}, Dosagem: {dosagem}, Forma: {forma}")
+        else:
+            print("⚠️ Nenhum medicamento cadastrado.")
+    except Exception as e:
+        print(f"❌ Erro ao listar medicamentos: {e}")
+    finally:
+        conn.close()
 
-    conn.close()
 
 def listar_usuarios():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users")
-    usuarios = cursor.fetchall()
+    try:
+        cursor.execute("SELECT user_id, nome, email FROM users")
+        usuarios = cursor.fetchall()
 
-    if usuarios:
-        print("📋 Lista de Usuários:")
-        for user in usuarios:
-            print(f"ID: {user[0]}, Nome: {user[1]}, Email: {user[2]}")
-    else:
-        print("❌ Nenhum usuário cadastrado.")
-
-    conn.close()
+        if usuarios:
+            print("👥 Lista de Usuários:")
+            for user_id, nome, email in usuarios:
+                print(f"🆔 ID: {user_id}, Nome: {nome}, Email: {email}")
+        else:
+            print("⚠️ Nenhum usuário cadastrado.")
+    except Exception as e:
+        print(f"❌ Erro ao listar usuários: {e}")
+    finally:
+        conn.close()
