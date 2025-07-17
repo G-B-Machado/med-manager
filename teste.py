@@ -1,4 +1,5 @@
-from core.models import verificar_estoque_baixo
+from core.models import registrar_dose
 
-verificar_estoque_baixo(user_id=1)  # ou qualquer ID que tenha medicamentos cadastrados
+registrar_dose(user_id=1, med_id=1, dose=1)
+
 

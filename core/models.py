@@ -154,3 +154,44 @@ def verificar_estoque_baixo(user_id, limite=5):
         print(f"❌ Erro ao verificar estoque baixo: {e}")
     finally:
         conn.close()
+
+def registrar_dose(user_id, med_id, dose):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        # Verifica o estoque atual
+        cursor.execute("""
+            SELECT quantidade_atual, unidade
+            FROM user_meds
+            WHERE user_id = ? AND med_id = ?
+        """, (user_id, med_id))
+
+        resultado = cursor.fetchone()
+
+        if resultado:
+            quantidade_atual, unidade = resultado
+
+            if quantidade_atual < dose:
+                print(f"⚠️ Estoque insuficiente para o medicamento. Restam apenas {quantidade_atual} {unidade}.")
+                return
+
+            nova_quantidade = quantidade_atual - dose
+
+            # Atualiza o valor
+            cursor.execute("""
+                UPDATE user_meds
+                SET quantidade_atual = ?
+                WHERE user_id = ? AND med_id = ?
+            """, (nova_quantidade, user_id, med_id))
+
+            conn.commit()
+
+            print(f"✅ Dose registrada com sucesso.")
+            print(f"📉 Novo estoque: {nova_quantidade} {unidade}")
+        else:
+            print("❌ Associação entre usuário e medicamento não encontrada.")
+    except Exception as e:
+        print(f"❌ Erro ao registrar dose: {e}")
+    finally:
+        conn.close()
