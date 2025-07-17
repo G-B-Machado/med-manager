@@ -195,3 +195,48 @@ def registrar_dose(user_id, med_id, dose):
         print(f"❌ Erro ao registrar dose: {e}")
     finally:
         conn.close()
+
+def simular_uso_diario(user_id, med_id, dose_por_vez, vezes_por_dia, dias):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        # Consulta o estoque atual
+        cursor.execute("""
+            SELECT quantidade_atual, unidade
+            FROM user_meds
+            WHERE user_id = ? AND med_id = ?
+        """, (user_id, med_id))
+        resultado = cursor.fetchone()
+
+        if not resultado:
+            print("❌ Associação entre usuário e medicamento não encontrada.")
+            return
+
+        quantidade_atual, unidade = resultado
+
+        total_dose = dose_por_vez * vezes_por_dia * dias
+
+        if quantidade_atual < total_dose:
+            print(f"⚠️ Estoque insuficiente para simular {dias} dia(s) de uso ({total_dose} {unidade} necessárias).")
+            return
+
+        nova_quantidade = quantidade_atual - total_dose
+
+        # Atualiza o estoque
+        cursor.execute("""
+            UPDATE user_meds
+            SET quantidade_atual = ?
+            WHERE user_id = ? AND med_id = ?
+        """, (nova_quantidade, user_id, med_id))
+
+        conn.commit()
+
+        print(f"✅ Simulação concluída: {dias} dia(s) × {vezes_por_dia} dose(s)/dia × {dose_por_vez} {unidade}/dose")
+        print(f"📉 Estoque anterior: {quantidade_atual} {unidade}")
+        print(f"📦 Novo estoque: {nova_quantidade} {unidade}")
+
+    except Exception as e:
+        print(f"❌ Erro durante simulação: {e}")
+    finally:
+        conn.close()
