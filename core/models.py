@@ -62,3 +62,34 @@ def associar_usuario_medicamento(user_id, med_id, quantidade_atual, unidade, dat
     finally:
         conn.close()
 
+def listar_medicamentos():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM medications")
+    medicamentos = cursor.fetchall()
+
+    if medicamentos:
+        print("📋 Lista de Medicamentos:")
+        for med in medicamentos:
+            print(f"ID: {med[0]}, Nome: {med[1]}, Dosagem: {med[2]}, Forma: {med[3]}")
+    else:
+        print("❌ Nenhum medicamento cadastrado.")
+
+    conn.close()
+
+def listar_usuarios():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users")
+    usuarios = cursor.fetchall()
+
+    if usuarios:
+        print("📋 Lista de Usuários:")
+        for user in usuarios:
+            print(f"ID: {user[0]}, Nome: {user[1]}, Email: {user[2]}")
+    else:
+        print("❌ Nenhum usuário cadastrado.")
+
+    conn.close()
