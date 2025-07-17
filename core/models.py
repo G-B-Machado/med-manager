@@ -27,3 +27,20 @@ def cadastrar_usuario(nome, email, senha):
         print(f"❌ Já existe um usuário com o email '{email}'.")
     finally:
         conn.close()
+
+def cadastrar_medicamento(nome, dosagem, forma ):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO medications (nome_generico, dosagem, forma)
+            VALUES (?, ?, ?)
+        """, (nome, dosagem, forma))
+
+        conn.commit()
+        print(f"✅ Medicamento '{nome}' cadastrado com sucesso.")
+    except Exception as e:
+        print(f"❌ Erro ao cadastrar medicamento: {e}")
+    finally:
+        conn.close()

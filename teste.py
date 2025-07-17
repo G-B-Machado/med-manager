@@ -1,4 +1,8 @@
-from core.models import cadastrar_usuario
+from core.models import cadastrar_medicamento
 
-# Exemplo de cadastro
-cadastrar_usuario("Guilherme Machado", "gui@example.com", "senha123")
+# Exemplo de uso
+cadastrar_medicamento(
+    nome="Dipirona",
+    dosagem="500mg",
+    forma="comprimido"
+)
