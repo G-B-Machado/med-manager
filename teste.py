@@ -1,3 +1,3 @@
-from core.models import listar_medicamentos, listar_usuarios
+from core.models import listar_medicamentos_por_usuario
 
-listar_usuarios()
+listar_medicamentos_por_usuario(user_id=1)

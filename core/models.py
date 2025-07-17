@@ -100,3 +100,31 @@ def listar_usuarios():
         print(f"❌ Erro ao listar usuários: {e}")
     finally:
         conn.close()
+
+def listar_medicamentos_por_usuario(user_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT m.nome_generico, m.dosagem, m.forma,
+                   um.quantidade_atual, um.unidade, um.data_inicio
+            FROM user_meds um
+            JOIN medications m ON um.med_id = m.med_id
+            WHERE um.user_id = ?
+        """, (user_id,))
+        
+        medicamentos = cursor.fetchall()
+
+        if medicamentos:
+            print(f"📋 Medicamentos do Usuário ID {user_id}:")
+            for nome, dosagem, forma, quantidade, unidade, data_inicio in medicamentos:
+                print(f"🧪 {nome} ({dosagem}, {forma})")
+                print(f"   Quantidade Atual: {quantidade} {unidade}")
+                print(f"   Início: {data_inicio}")
+        else:
+            print("⚠️ Nenhum medicamento associado a este usuário.")
+    except Exception as e:
+        print(f"❌ Erro ao buscar medicamentos do usuário: {e}")
+    finally:
+        conn.close()
