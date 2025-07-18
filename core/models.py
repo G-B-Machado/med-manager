@@ -285,3 +285,23 @@ def listar_historico_uso(user_id=None, med_id=None):
         print("❌ Nenhum registro encontrado para o filtro aplicado.")
 
     conn.close()
+    
+def cadastrar_agendamento(user_med_id, hora, dias_semana, dose):
+    """
+    Cadastra um agendamento de uso de medicamento.
+    :param user_med_id: ID da relação entre usuário e medicamento
+    :param hora: Horário no formato 'HH:MM'
+    :param dias_semana: Dias da semana (ex: '1,3,5')
+    :param dose: Quantidade a ser tomada
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO schedules (user_med_id, hora, dias_semana, dose)
+        VALUES (?, ?, ?, ?)
+    """, (user_med_id, hora, dias_semana, dose))
+
+    conn.commit()
+    conn.close()
+    print("📅 Agendamento cadastrado com sucesso.")
