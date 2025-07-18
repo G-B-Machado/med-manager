@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 import os
+import requests
 
 CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'db', 'database.db')
 
@@ -285,7 +286,7 @@ def listar_historico_uso(user_id=None, med_id=None):
         print("❌ Nenhum registro encontrado para o filtro aplicado.")
 
     conn.close()
-    
+
 def cadastrar_agendamento(user_med_id, hora, dias_semana, dose):
     """
     Cadastra um agendamento de uso de medicamento.
@@ -305,3 +306,19 @@ def cadastrar_agendamento(user_med_id, hora, dias_semana, dose):
     conn.commit()
     conn.close()
     print("📅 Agendamento cadastrado com sucesso.")
+
+def enviar_mensagem_whatsapp(numero_destino, mensagem):
+    url = "https://api.ultramsg.com/instanceXXXX/messages/chat"
+    token = "SEU_TOKEN"
+
+    payload = {
+        "token": token,
+        "to": numero_destino,
+        "body": mensagem
+    }
+
+    response = requests.post(url, data=payload)
+    if response.status_code == 200:
+        print("📤 Mensagem enviada com sucesso.")
+    else:
+        print("❌ Erro ao enviar mensagem:", response.text)
