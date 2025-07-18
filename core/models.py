@@ -2,6 +2,9 @@ import sqlite3
 import hashlib
 import os
 import requests
+import schedule
+import time
+from datetime import datetime
 
 CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'db', 'database.db')
 
@@ -322,3 +325,31 @@ def enviar_mensagem_whatsapp(numero_destino, mensagem):
         print("📤 Mensagem enviada com sucesso.")
     else:
         print("❌ Erro ao enviar mensagem:", response.text)
+
+def checar_lembretes_e_enviar():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    hora_atual = datetime.now().strftime("%H:%M")
+    dia_semana_atual = str(datetime.now().isoweekday())  # 1 = segunda, ..., 7 = domingo
+
+    cursor.execute("""
+        SELECT u.nome, u.email, u.telefone, m.nome, s.hora, s.dose
+        FROM schedules s
+        JOIN user_meds um ON um.user_med_id = s.user_med_id
+        JOIN users u ON u.user_id = um.user_id
+        JOIN medications m ON m.med_id = um.med_id
+        WHERE s.hora = ?
+    """, (hora_atual,))
+
+    lembretes = cursor.fetchall()
+
+    for nome, email, telefone, med_nome, hora, dose in lembretes:
+        # Confirmar se o dia da semana está incluído
+        cursor.execute("SELECT dias_semana FROM schedules WHERE hora = ?", (hora,))
+        dias = cursor.fetchone()
+        if dias and dia_semana_atual in dias[0].split(','):
+            msg = f"🔔 Olá {nome}! É hora de tomar {dose} unidade(s) do medicamento '{med_nome}' às {hora}."
+            enviar_mensagem_whatsapp(telefone, msg)
+
+    conn.close()
