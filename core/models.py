@@ -2,7 +2,7 @@ import sqlite3
 import hashlib
 import os
 
-CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'database.db')
+CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'db', 'database.db')
 
 def conectar():
     return sqlite3.connect(CAMINHO_BANCO)
@@ -67,7 +67,7 @@ def listar_medicamentos():
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT med_id, nome, dosagem, forma FROM medications")
+        cursor.execute("SELECT med_id, nome_generico, dosagem, forma FROM medications")
         medicamentos = cursor.fetchall()
 
         if medicamentos:
@@ -248,3 +248,40 @@ def simular_uso_diario(user_id, med_id, dose_por_vez, vezes_por_dia, dias):
     finally:
         conn.close()
 
+def listar_historico_uso(user_id=None, med_id=None):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    query = """
+        SELECT log.user_id, u.nome, m.nome_generico, log.quantidade_usada, log.unidade, log.data_uso
+        FROM medication_usage_log log
+        JOIN users u ON log.user_id = u.user_id
+        JOIN medications m ON log.med_id = m.med_id
+    """
+    params = []
+    filtros = []
+
+    if user_id:
+        filtros.append("log.user_id = ?")
+        params.append(user_id)
+
+    if med_id:
+        filtros.append("log.med_id = ?")
+        params.append(med_id)
+
+    if filtros:
+        query += " WHERE " + " AND ".join(filtros)
+
+    query += " ORDER BY log.data_uso DESC"
+
+    cursor.execute(query, params)
+    registros = cursor.fetchall()
+
+    if registros:
+        print("📅 Histórico de Uso de Medicamentos:")
+        for reg in registros:
+            print(f"ID Uso: {reg[0]} | Usuário: {reg[1]} | Medicamento: {reg[2]} | Quantidade: {reg[3]} {reg[4]} | Data: {reg[5]}")
+    else:
+        print("❌ Nenhum registro encontrado para o filtro aplicado.")
+
+    conn.close()

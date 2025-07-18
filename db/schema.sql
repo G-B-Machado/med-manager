@@ -5,21 +5,21 @@ DROP TABLE IF EXISTS user_meds;
 DROP TABLE IF EXISTS medications;
 DROP TABLE IF EXISTS users;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
   nome        TEXT    NOT NULL,
   email       TEXT    NOT NULL UNIQUE,
   senha_hash  TEXT    NOT NULL
 );
 
-CREATE TABLE medications (
+CREATE TABLE IF NOT EXISTS medications (
   med_id          INTEGER PRIMARY KEY AUTOINCREMENT,
   nome_generico   TEXT    NOT NULL,
   dosagem         TEXT,
   forma           TEXT
 );
 
-CREATE TABLE user_meds (
+CREATE TABLE IF NOT EXISTS user_meds (
   user_med_id      INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id          INTEGER NOT NULL,
   med_id           INTEGER NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE user_meds (
   FOREIGN KEY (med_id)  REFERENCES medications(med_id)
 );
 
-CREATE TABLE schedules (
+CREATE TABLE IF NOT EXISTS schedules (
   sched_id     INTEGER PRIMARY KEY AUTOINCREMENT,
   user_med_id  INTEGER NOT NULL,
   hora         TEXT    NOT NULL,       -- formato HH:MM

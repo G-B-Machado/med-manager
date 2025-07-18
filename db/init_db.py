@@ -3,7 +3,7 @@ import os
 
 def criar_banco():
     caminho_banco = "database.db"
-    caminho_schema = os.path.join("db", "schema.sql")
+    caminho_schema = os.path.join(os.path.dirname(__file__), 'schema.sql')  # melhor forma, relativo ao script
 
     with open(caminho_schema, 'r', encoding='utf-8') as f:
         schema = f.read()
