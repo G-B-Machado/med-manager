@@ -1,32 +1,12 @@
 from core.models import (
-    associar_usuario_medicamento,
-    registrar_dose,
-    listar_medicamentos,
-    listar_usuarios,
-    listar_historico_uso
+    cadastrar_agendamento
 )
 
-# 3. Listar usuários e medicamentos cadastrados
-listar_usuarios()
-listar_medicamentos()
+# Exemplo: João toma Dipirona às 08:00 e 20:00 nas seg, qua e sex
 
-# 4. Associar medicamento a um usuário (João com Dipirona)
-associar_usuario_medicamento(
-    user_id=1,
-    med_id=1,
-    quantidade_atual=20,
-    unidade="comprimido",
-    data_inicio="2025-07-16"
-)
+user_med_id = 1  # Relacionamento já criado
+cadastrar_agendamento(user_med_id, "08:00", "1,3,5", 1.0)
+cadastrar_agendamento(user_med_id, "20:00", "1,3,5", 1.0)
 
-# 5. Registrar uso de medicamento (João tomou 1 comprimido de Dipirona)
-registrar_dose(
-    user_id=1,
-    med_id=1,
-    dose=1
-)
-
-# 6. Listar histórico de uso
-listar_historico_uso(1,1)
 
 
