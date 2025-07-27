@@ -1,3 +1,5 @@
+# enviar_sms.py
+
 import os
 from twilio.rest import Client
 from dotenv import load_dotenv
@@ -5,11 +7,9 @@ from dotenv import load_dotenv
 # Carrega as variáveis do arquivo .env
 load_dotenv()
 
-# Suas credenciais do Twilio a partir das variáveis de ambiente
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
-
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 def enviar_sms(destinatario, mensagem):
     """
@@ -19,17 +19,15 @@ def enviar_sms(destinatario, mensagem):
     """
     if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER]):
         print("❌ As credenciais do Twilio não estão configuradas nas variáveis de ambiente.")
-        return
+        return None
 
     try:
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-
         message = client.messages.create(
             body=mensagem,
             from_=TWILIO_PHONE_NUMBER,
             to=destinatario
         )
-
         print(f"✅ SMS enviado com sucesso para {destinatario}. SID: {message.sid}")
         return message.sid
     except Exception as e:

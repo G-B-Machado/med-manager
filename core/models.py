@@ -1,6 +1,8 @@
 import sqlite3
 import hashlib
 import os
+import datetime
+from enviar_sms import enviar_sms
 
 
 CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'db', 'database.db')
@@ -307,3 +309,41 @@ def cadastrar_agendamento(user_med_id, hora, dias_semana, dose):
     conn.close()
     print("📅 Agendamento cadastrado com sucesso.")
 
+def verificar_agendamentos():
+    agora = datetime.datetime.now()
+    hora_atual = agora.strftime("%H:%M")
+    dia_atual = str(agora.weekday())  # Segunda = 0, Domingo = 6
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT s.user_med_id, s.hora, s.dias_semana, s.dose,
+                   u.user_id, u.nome, u.telefone, m.nome_generico
+            FROM schedules s
+            JOIN user_meds um ON s.user_med_id = um.user_med_id
+            JOIN users u ON um.user_id = u.user_id
+            JOIN medications m ON um.med_id = m.med_id
+            WHERE s.hora = ?
+        """, (hora_atual,))
+
+        agendamentos = cursor.fetchall()
+
+        for agendamento in agendamentos:
+            dias_semana = agendamento[2].split(',')
+            if dia_atual not in dias_semana:
+                continue  # Pula se hoje não é um dos dias do agendamento
+
+            user_nome = agendamento[5]
+            user_telefone = agendamento[6]
+            med_nome = agendamento[7]
+            dose = agendamento[3]
+
+            mensagem = f"Olá {user_nome}, está na hora de tomar {dose} de {med_nome}. 💊"
+            enviar_sms(user_telefone, mensagem)
+
+    except Exception as e:
+        print(f"❌ Erro ao verificar agendamentos: {e}")
+    finally:
+        conn.close()

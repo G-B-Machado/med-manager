@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
   user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
   nome        TEXT    NOT NULL,
+  telefone    TEXT    NOT NULL,
   email       TEXT    NOT NULL UNIQUE,
   senha_hash  TEXT    NOT NULL
 );
