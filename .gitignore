@@ -5,4 +5,6 @@ database.db
 __pycache__/
 *.pyc
 *.log
-.env
+echo ".env" >> .gitignore
+# Ignorar arquivos de configuração do editor
+.vscode/
