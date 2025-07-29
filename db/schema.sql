@@ -1,4 +1,3 @@
-
 -- Limpeza das tabelas existentes
 DROP TABLE IF EXISTS schedule_days;
 DROP TABLE IF EXISTS pharmacy_prices;
